@@ -58,6 +58,8 @@ namespace LsTool
                     writer.Write(fileNameHash);
                 else
                     writer.Write(Extensions.StrCode64(fileName));
+            short offsetStart = (short)writer.BaseStream.Position;
+            Console.WriteLine($"!!!offsetStart {offsetStart}!!!");
             int badKeyCount = keys.Count + 1;
             writer.Write(badKeyCount);
             long[] offsetsToKeyframeOffsets = new long[badKeyCount];
@@ -72,9 +74,9 @@ namespace LsTool
                 writer.AlignStream(4);
             };
 
-            keyframeOffsets[keyframeOffsets.GetLowerBound(0)] = (short)writer.BaseStream.Position;
+            keyframeOffsets[keyframeOffsets.GetLowerBound(0)] = (short)(writer.BaseStream.Position);
             writer.BaseStream.Position = offsetsToKeyframeOffsets[keyframeOffsets.GetLowerBound(0)];
-            writer.Write(keyframeOffsets[keyframeOffsets.GetLowerBound(0)]);
+            writer.Write((short)(keyframeOffsets[keyframeOffsets.GetLowerBound(0)] - offsetStart));
             writer.BaseStream.Position = keyframeOffsets[keyframeOffsets.GetLowerBound(0)];
 
             writer.Write((ushort)100); //default time
@@ -87,9 +89,9 @@ namespace LsTool
             writer.Write(1);
             for (int i = 0; i < keys.Count; i++)
             {
-                keyframeOffsets[i+1] = (short)writer.BaseStream.Position;
+                keyframeOffsets[i + 1] = (short)writer.BaseStream.Position;
                 writer.BaseStream.Position = offsetsToKeyframeOffsets[i + 1];
-                writer.Write(keyframeOffsets[i + 1]);
+                writer.Write((short)(keyframeOffsets[i + 1] - offsetStart));
 
                 writer.BaseStream.Position = keyframeOffsets[i + 1];
                 keys[i].WriteBinary(writer,version);

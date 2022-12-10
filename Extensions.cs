@@ -28,7 +28,12 @@ namespace LsTool
         {
             long pos = writer.BaseStream.Position;
             if (pos % div != 0)
-                writer.BaseStream.Position += div - pos % div;
+                writer.WriteZeroes((int)(div - pos % div));
+        }
+        public static void WriteZeroes(this BinaryWriter writer, int count)
+        {
+            for (int i = 0; i < count; i++)
+                writer.Write((byte)0);
         }
         public static ulong StrCode64(string text)
         {
